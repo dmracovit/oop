@@ -1,6 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
-using System.Reflection.Metadata.Ecma335;
+
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -36,28 +37,27 @@ public class FileReader
             {
                 var data = JsonSerializer.Deserialize<JsonInput>(jsonString, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
 
-                Console.WriteLine("Classified Individuals by Universe:");
+                var categorizedIndividuals = new Dictionary<string, List<Individual>>
+                {
+                    { "Marvel", new List<Individual>() },
+                    { "Lord of the Rings", new List<Individual>() },
+                    { "Star Wars", new List<Individual>() },
+                    { "Hitchhiker", new List<Individual>() }
+                };
+
                 foreach (var individual in data.Input)
                 {
-                    Console.WriteLine($"ID: {individual.Id}");
-
                     string universe = ClassifyHumanoid(individual);
 
-                    Console.WriteLine($"Assigned Universe: {universe}");
+                    if (categorizedIndividuals.ContainsKey(universe))
+                    {
+                        categorizedIndividuals[universe].Add(individual);
+                    }
+                }
 
-                    if (individual.IsHumanoid.HasValue)
-                        Console.WriteLine($"Is Humanoid: {individual.IsHumanoid.Value}");
-
-                    if (!string.IsNullOrWhiteSpace(individual.Planet))
-                        Console.WriteLine($"Planet: {individual.Planet}");
-
-                    if (individual.Age.HasValue)
-                        Console.WriteLine($"Age: {individual.Age.Value}");
-
-                    if (individual.Traits != null && individual.Traits.Count > 0)
-                        Console.WriteLine($"Traits: {string.Join(", ", individual.Traits)}");
-
-                    Console.WriteLine();  
+                foreach (var universe in categorizedIndividuals.Keys)
+                {
+                    SaveToJsonFile(universe, categorizedIndividuals[universe]);
                 }
             }
             catch (JsonException ex)
@@ -67,145 +67,86 @@ public class FileReader
         }
     }
 
-public string ClassifyHumanoid(Individual individual)
-{
-    if (individual.IsHumanoid.HasValue && individual.IsHumanoid.Value || !individual.IsHumanoid.HasValue)
+    public string ClassifyHumanoid(Individual individual)
     {
-        if (!string.IsNullOrEmpty(individual.Planet))
+        if (individual.IsHumanoid.HasValue && individual.IsHumanoid.Value || !individual.IsHumanoid.HasValue)
         {
-            if (individual.Planet == "Earth")
-                return "Lord of the Rings";  
-
-            if (individual.Planet == "Asgard")
-                return "Marvel"; 
-            if (individual.Planet == "Betelgeuse")
-                return "Hitchhiker";
-        }
-        else
-        {
-
-            if (individual.Traits != null && 
-                individual.Traits.Contains("SHORT", StringComparer.OrdinalIgnoreCase) ||
-                individual.Traits.Contains("BULKY", StringComparer.OrdinalIgnoreCase))
+            if (!string.IsNullOrEmpty(individual.Planet))
             {
-                return "Lord of the Rings";
+                if (individual.Planet == "Earth") return "Lord of the Rings";
+                if (individual.Planet == "Asgard") return "Marvel";
+                if (individual.Planet == "Betelgeuse") return "Hitchhiker";
             }
-
-            if (individual.Traits != null &&
-                individual.Traits.Contains("TALL", StringComparer.OrdinalIgnoreCase) &&
-                individual.Traits.Contains("BLONDE", StringComparer.OrdinalIgnoreCase))
+            else
             {
-                return "Marvel";
-            }
+                if (individual.Traits != null &&
+                    individual.Traits.Contains("SHORT", StringComparer.OrdinalIgnoreCase) ||
+                    individual.Traits.Contains("BULKY", StringComparer.OrdinalIgnoreCase))
+                    return "Lord of the Rings";
 
-            if (individual.Traits != null &&
-                individual.Traits.Contains("TALL", StringComparer.OrdinalIgnoreCase) &&
-                individual.Traits.Contains("POINTY_EARS", StringComparer.OrdinalIgnoreCase))
-            {
-                return "Lord of the Rings";
-            }
+                if (individual.Traits != null &&
+                    individual.Traits.Contains("TALL", StringComparer.OrdinalIgnoreCase) &&
+                    individual.Traits.Contains("BLONDE", StringComparer.OrdinalIgnoreCase))
+                    return "Marvel";
 
-            if (individual.Age.HasValue && individual.Age > 5000)
-            {
-                return "Lord of the Rings";  
+                if (individual.Traits != null &&
+                    individual.Traits.Contains("TALL", StringComparer.OrdinalIgnoreCase) &&
+                    individual.Traits.Contains("POINTY_EARS", StringComparer.OrdinalIgnoreCase))
+                    return "Lord of the Rings";
+
+                if (individual.Age.HasValue && individual.Age > 5000)
+                    return "Lord of the Rings";
             }
         }
-    }
-    
-    if (individual.IsHumanoid.HasValue && !individual.IsHumanoid.Value)
-    {
-        if (!string.IsNullOrEmpty(individual.Planet))
+
+        if (individual.IsHumanoid.HasValue && !individual.IsHumanoid.Value)
         {
-            if (individual.Planet == "Kashyyyk" || individual.Planet == "Endor")
-                return "Star Wars"; 
-
-            if (individual.Planet == "Vogsphere")
-                return "Hitchhiker";
-        }
-        else
-        {
-
-            if (individual.Traits != null && individual.Traits.Contains("SHORT", StringComparer.OrdinalIgnoreCase))
+            if (!string.IsNullOrEmpty(individual.Planet))
             {
-                return "Star Wars";
+                if (individual.Planet == "Kashyyyk" || individual.Planet == "Endor") return "Star Wars";
+                if (individual.Planet == "Vogsphere") return "Hitchhiker";
             }
-
-            if (individual.Traits != null &&
-                individual.Traits.Contains("TALL", StringComparer.OrdinalIgnoreCase) &&
-                individual.Traits.Contains("HAIRY", StringComparer.OrdinalIgnoreCase))
+            else
             {
-                return "Star Wars";
-            }
+                if (individual.Traits != null && individual.Traits.Contains("SHORT", StringComparer.OrdinalIgnoreCase)) return "Star Wars";
+                if (individual.Traits != null &&
+                    individual.Traits.Contains("TALL", StringComparer.OrdinalIgnoreCase) &&
+                    individual.Traits.Contains("HAIRY", StringComparer.OrdinalIgnoreCase))
+                    return "Star Wars";
 
-            if (individual.Traits != null &&
-                individual.Traits.Contains("GREEN", StringComparer.OrdinalIgnoreCase) ||
-                individual.Traits.Contains("BULKY", StringComparer.OrdinalIgnoreCase))
-            {
-                return "Hitchhiker";
-            }
+                if (individual.Traits != null &&
+                    individual.Traits.Contains("GREEN", StringComparer.OrdinalIgnoreCase) ||
+                    individual.Traits.Contains("BULKY", StringComparer.OrdinalIgnoreCase))
+                    return "Hitchhiker";
 
-            if (individual.Age.HasValue && individual.Age > 200)
-            {
-                return "Star Wars";  
+                if (individual.Age.HasValue && individual.Age > 200) return "Star Wars";
             }
         }
+
+        return "Unknown Universe";
     }
 
-    if (!individual.IsHumanoid.HasValue)
+    private void SaveToJsonFile(string universe, List<Individual> individuals)
     {
-        if (!string.IsNullOrEmpty(individual.Planet))
+        var output = new
         {
-            if (individual.Planet == "Earth")
-                return "Lord of the Rings";  
+            name = universe,
+            individuals = individuals
+        };
 
-            if (individual.Planet == "Asgard")
-                return "Marvel"; 
+        string json = JsonSerializer.Serialize(output, new JsonSerializerOptions { WriteIndented = true });
 
-            if (individual.Planet == "Betelgeuse" || individual.Planet == "Vogsphere")
-                return "Hitchhiker"; 
-
-            if (individual.Planet == "Kashyyyk" || individual.Planet == "Endor")
-                return "Star Wars";
-
+        string filePath = $"{universe}.json";  // Save as marvel.json, lotr.json, etc.
+        try
+        {
+            File.WriteAllText(filePath, json);
+            Console.WriteLine($"Saved {universe} data to {filePath}");
         }
-        else
+        catch (Exception ex)
         {
-
-            if (individual.Traits != null &&
-                individual.Traits.Contains("SHORT", StringComparer.OrdinalIgnoreCase) &&
-                individual.Traits.Contains("BULKY", StringComparer.OrdinalIgnoreCase))
-            {
-                return "Lord of the Rings";  
-            }
-
-            if (individual.Traits != null &&
-                individual.Traits.Contains("TALL", StringComparer.OrdinalIgnoreCase) &&
-                individual.Traits.Contains("BLONDE", StringComparer.OrdinalIgnoreCase))
-            {
-                return "Marvel";
-            }
-
-            if (individual.Traits != null &&
-                individual.Traits.Contains("TALL", StringComparer.OrdinalIgnoreCase) &&
-                individual.Traits.Contains("POINTY_EARS", StringComparer.OrdinalIgnoreCase))
-            {
-                return "Lord of the Rings";
-            }
-
-            if (individual.Traits != null && individual.Traits.Contains("HAIRY", StringComparer.OrdinalIgnoreCase))
-            {
-                return "Star Wars";
-            }
-            if (individual.Traits != null && individual.Traits.Contains("EXTRA_ARMS", StringComparer.OrdinalIgnoreCase)||
-            individual.Traits.Contains("EXTRA_HEAD", StringComparer.OrdinalIgnoreCase))
-                return "Hitchhiker";
+            Console.WriteLine($"Error saving file: {ex.Message}");
         }
     }
-
-    return "Unknown Universe";
-}
-
-
 }
 
 public class JsonInput
@@ -237,7 +178,7 @@ public class Program
     public static void Main()
     {
         string filePath = "/home/dima/Documents/oop/main/input.json";  
-        
+
         FileReader reader = new FileReader(filePath);
         reader.ClassifyAndPrint();  
     }
