@@ -1,60 +1,51 @@
 ﻿using System;
-// Day 1
-namespace SimpleOOP
+using System.IO;
+
+public class FileReader
 {
-    // Define a Car class
-    class Car
+    public string FilePath { get; set; }
+
+    public FileReader(string filePath)
     {
-        // Properties
-        public string Make { get; set; }
-        public string Model { get; set; }
-        public int Year { get; set; }
+        FilePath = filePath;
+    }
 
-        // Constructor
-        public Car(string make, string model, int year)
+    public string ReadFile()
+    {
+        try
         {
-            Make = make;
-            Model = model;
-            Year = year;
+            return File.ReadAllText(FilePath);
         }
-
-        // Method to display car details
-        public void DisplayInfo()
+        catch (Exception ex)
         {
-            Console.WriteLine($"Car Make: {Make}, Model: {Model}, Year: {Year}");
-        }
-
-        // Method to start the car
-        public void Start()
-        {
-            Console.WriteLine($"{Make} {Model} is starting.");
+            Console.WriteLine($"Error reading file: {ex.Message}");
+            return string.Empty;
         }
     }
 
-    class Program
+    public void PrintRawJson()
     {
-        static void Main(string[] args)
+        string jsonString = ReadFile();
+
+        if (!string.IsNullOrEmpty(jsonString))
         {
-            // Prompt user for car attributes
-            Console.Write("Enter the car make: ");
-            string make = Console.ReadLine();
-
-            Console.Write("Enter the car model: ");
-            string model = Console.ReadLine();
-
-            Console.Write("Enter the car year: ");
-            int year = int.Parse(Console.ReadLine());
-
-            // Create an instance of Car with user input
-            Car myCar = new Car(make, model, year);
-
-            // Display car information
-            myCar.DisplayInfo();
-
-            // Start the car
-            myCar.Start();
-
-            Console.ReadLine(); // Wait for user input before closing
+            Console.WriteLine("Raw JSON Content:");
+            Console.WriteLine(jsonString);
         }
+        else
+        {
+            Console.WriteLine("No content to display.");
+        }
+    }
+}
+
+public class Program
+{
+    public static void Main()
+    {
+        string filePath = "/home/dima/Documents/oop/main/input.json";  
+        
+        FileReader reader = new FileReader(filePath);
+        reader.PrintRawJson(); 
     }
 }
