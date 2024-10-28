@@ -20,7 +20,7 @@ class Program
                 break;
 
             case "3":
-                Console.WriteLine("Task is not done yet");
+                RunTask3();
                 break;
 
             case "4":
@@ -80,5 +80,30 @@ class Program
         Console.WriteLine("Number of Letters: " + textData.GetNumberOfLetters());
         Console.WriteLine("Number of Sentences: " + textData.GetNumberOfSentences());
         Console.WriteLine("Longest Word: " + textData.GetLongestWord());
+    }
+
+    static void RunTask3()
+    {
+        Assistant assistant = new Assistant("Boris");
+
+        Display display1 = new Display(1920, 1080, 92.0f, "Model A");
+        Display display2 = new Display(2560, 1440, 109.0f, "Model B");
+        Display display3 = new Display(3840, 2160, 110.0f, "Model C");
+
+        assistant.AssignDisplay(display1);
+        assistant.AssignDisplay(display2);
+        assistant.AssignDisplay(display3);
+
+        assistant.Assist();
+
+        Display boughtDisplay = assistant.BuyBestDisplay();
+        if (boughtDisplay != null)
+        {
+            Console.WriteLine($"Successfully bought: {boughtDisplay.GetModel()}");
+        }
+        else
+        {
+            Console.WriteLine("Display was not found.");
+        }
     }
 }
