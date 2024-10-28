@@ -24,7 +24,12 @@ class Program
                 break;
 
             case "4":
-                Console.WriteLine("Tasl is not done yes");
+                if (args.Length < 2)
+                {
+                    Console.WriteLine("Task 4 requires at least one .txt file path as an argument.");
+                    break;
+                }
+                RunTask4(args);
                 break;
 
             default:
@@ -105,5 +110,37 @@ class Program
         {
             Console.WriteLine("Display was not found.");
         }
+    }
+
+    static void RunTask4(string[] args)
+    {
+        foreach (string filePath in args[1..]) 
+        {
+            try
+            {
+                FileReader fileReader = new FileReader();
+                string fileContent = fileReader.ReadFileIntoString(filePath);
+
+                TextData textData = new TextData(fileContent, Path.GetFileName(filePath));
+
+                PrintTextDataInfo(textData);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error processing file '{filePath}': {ex.Message}");
+            }
+        }
+    }
+
+    static void PrintTextDataInfo(TextData textData)
+    {
+        Console.WriteLine($"File: {textData.GetFilename()}");
+        Console.WriteLine($"Text: {textData.GetText()}");
+        Console.WriteLine($"Number of Vowels: {textData.GetNumberOfVowels()}");
+        Console.WriteLine($"Number of Consonants: {textData.GetNumberOfConsonants()}");
+        Console.WriteLine($"Number of Letters: {textData.GetNumberOfLetters()}");
+        Console.WriteLine($"Number of Sentences: {textData.GetNumberOfSentences()}");
+        Console.WriteLine($"Longest Word: {textData.GetLongestWord()}");
+        Console.WriteLine();
     }
 }
