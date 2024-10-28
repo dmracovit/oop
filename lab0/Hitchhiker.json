@@ -41,12 +41,30 @@
       ]
     },
     {
+      "id": 17,
+      "isHumanoid": null,
+      "planet": "",
+      "age": 26,
+      "traits": [
+        "EXTRA_ARMS"
+      ]
+    },
+    {
       "id": 18,
       "isHumanoid": false,
       "planet": "",
       "age": null,
       "traits": [
         "BULKY"
+      ]
+    },
+    {
+      "id": 21,
+      "isHumanoid": null,
+      "planet": "",
+      "age": 82,
+      "traits": [
+        "EXTRA_HEAD"
       ]
     }
   ]

@@ -8,14 +8,7 @@ using System.Text.Json.Serialization;
 // reading the file content
 public class FileReader
 {
-    public string FilePath { get; set; }
-
-    public FileReader(string filePath)
-    {
-        FilePath = filePath;
-    }
-
-    public string ReadFile()
+    public static string ReadFile(string FilePath)
     {
         try
         {
@@ -32,7 +25,7 @@ public class FileReader
 // parsing the JSON input
 public class JsonParser
 {
-    public JsonInput Parse(string jsonString)
+    public JsonInput? Parse(string jsonString)
     {
         try
         {
@@ -49,7 +42,7 @@ public class JsonParser
 // classifying individuals into universes
 public class Classifier
 {
-    public Dictionary<string, List<Individual>> CategorizeIndividuals(List<Individual> individuals)
+    public Dictionary<string, List<Individual>>? CategorizeIndividuals(List<Individual> individuals)
     {
         var categorizedIndividuals = new Dictionary<string, List<Individual>>
         {
@@ -74,13 +67,15 @@ public class Classifier
 
     private string ClassifyHumanoid(Individual individual)
     {
-        if (individual.IsHumanoid.HasValue && individual.IsHumanoid.Value || !individual.IsHumanoid.HasValue)
+        if ((individual.IsHumanoid.HasValue && individual.IsHumanoid.Value) || !individual.IsHumanoid.HasValue)
         {
             if (!string.IsNullOrEmpty(individual.Planet))
             {
                 if (individual.Planet == "Earth") return "Lord of the Rings";
                 if (individual.Planet == "Asgard") return "Marvel";
                 if (individual.Planet == "Betelgeuse") return "Hitchhiker";
+                if (individual.Planet == "Endor") return "Star Wars";
+                if (individual.Planet == "Kashyyyk") return "Star Wars";
             }
             else
             {
@@ -101,6 +96,11 @@ public class Classifier
 
                 if (individual.Age.HasValue && individual.Age > 5000)
                     return "Lord of the Rings";
+
+                if (individual.Traits != null &&
+                    (individual.Traits.Contains("EXTRA_ARMS", StringComparer.OrdinalIgnoreCase) ||
+                     individual.Traits.Contains("EXTRA_HEAD", StringComparer.OrdinalIgnoreCase)))
+                    return "Hitchhiker";
             }
         }
 
@@ -162,10 +162,10 @@ public class FileSaver
 public class JsonInput
 {
     [JsonPropertyName("input")]
-    public List<Individual> Input { get; set; }
+    public List<Individual>? Input { get; set; }
 }
 
-public class Individual
+public record Individual
 {
     [JsonPropertyName("id")]
     public int Id { get; set; }
@@ -190,13 +190,12 @@ public class Program
     {
         string filePath = "/home/dima/Documents/oop/main/input.json";  
 
-        FileReader reader = new FileReader(filePath);
-        string jsonString = reader.ReadFile();
+        string jsonString = FileReader.ReadFile(filePath);
 
         if (!string.IsNullOrEmpty(jsonString))
         {
             JsonParser parser = new JsonParser();
-            JsonInput data = parser.Parse(jsonString);
+            JsonInput? data = parser.Parse(jsonString);
 
             if (data != null)
             {

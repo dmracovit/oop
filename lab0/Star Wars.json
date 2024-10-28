@@ -22,6 +22,16 @@
       ]
     },
     {
+      "id": 7,
+      "isHumanoid": null,
+      "planet": "Kashyyyk",
+      "age": 352,
+      "traits": [
+        "HAIRY",
+        "TALL"
+      ]
+    },
+    {
       "id": 8,
       "isHumanoid": false,
       "planet": "Endor",
@@ -37,6 +47,13 @@
         "HAIRY",
         "TALL"
       ]
+    },
+    {
+      "id": 15,
+      "isHumanoid": null,
+      "planet": "Endor",
+      "age": null,
+      "traits": []
     }
   ]
 }
