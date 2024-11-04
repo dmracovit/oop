@@ -1,5 +1,5 @@
 ﻿using System;
-using Coffee_types; // Import the Coffee_types namespace
+using CoffeeShop; 
 
 class Program
 {
@@ -7,13 +7,13 @@ class Program
     {
         Barista barista = new Barista();
 
-        barista.MakeAmericano(Intensity.LIGHT, 200);
+        barista.MakeAmericano(Coffee_types.Intensity.NORMAL, 200);
 
-        barista.MakeCappuccino(Intensity.LIGHT, 150);
+        barista.MakeCappuccino(Coffee_types.Intensity.STRONG, 150);
 
-        barista.MakePumpkinSpiceLatte(Intensity.LIGHT, 150, 10);
+        barista.MakePumpkinSpiceLatte(Coffee_types.Intensity.NORMAL, 150, 10);
 
-        barista.MakeSyrupCappuccino(Intensity.LIGHT, 150, SyrupType.VANILLA);
+        barista.MakeSyrupCappuccino(Coffee_types.Intensity.STRONG, 150, Coffee_types.SyrupType.VANILLA);
 
         Console.WriteLine("All coffees have been prepared.");
     }
