@@ -1,27 +1,35 @@
+using System.Collections.Generic;
 using Coffee_types;
-
-namespace CoffeeShop
+namespace CoffeeApp
 {
     public class Barista
     {
-        public Cappuccino MakeCappuccino(Intensity intensity, int mlOfMilk)
+        public void MakeCoffee(List<string> coffeeOrders, string intensityInput, string syrupType)
         {
-            return new Cappuccino(intensity, mlOfMilk).MakeCappuccino();
+            foreach (var coffeeType in coffeeOrders)
+            {
+                Coffee coffee = CreateCoffee(coffeeType, intensityInput, syrupType);
+                if (coffee != null)
+                {
+                    coffee.Make();
+                }
+                else
+                {
+                    Console.WriteLine($"Unknown coffee type: {coffeeType}");
+                }
+            }
         }
 
-        public PumpkinSpiceLatte MakePumpkinSpiceLatte(Intensity intensity, int mlOfMilk, int mgOfPumpkinSpice)
+        private Coffee CreateCoffee(string coffeeType, string intensityInput, string syrupType)
         {
-            return new PumpkinSpiceLatte(intensity, mlOfMilk, mgOfPumpkinSpice).MakePumpkinSpiceLatte();
-        }
-
-        public Americano MakeAmericano(Intensity intensity, int mlOfWater)
-        {
-            return new Americano(intensity, mlOfWater).MakeAmericano();
-        }
-
-        public SyrupCappuccino MakeSyrupCappuccino(Intensity intensity, int mlOfMilk, SyrupType syrup)
-        {
-            return new SyrupCappuccino(intensity, mlOfMilk, syrup).MakeSyrupCappuccino();
+            return coffeeType switch
+            {
+                "Americano" => new Americano((Intensity)Enum.Parse(typeof(Intensity), intensityInput), 150),
+                "Cappuccino" => new Cappuccino((Intensity)Enum.Parse(typeof(Intensity), intensityInput), 100),
+                "SyrupCappuccino" => new SyrupCappuccino((Intensity)Enum.Parse(typeof(Intensity), intensityInput), 100, (SyrupType)Enum.Parse(typeof(SyrupType), syrupType)),
+                "PumpkinSpiceLatte" => new PumpkinSpiceLatte((Intensity)Enum.Parse(typeof(Intensity), intensityInput), 120, 50),
+                _ => null
+            };
         }
     }
 }
