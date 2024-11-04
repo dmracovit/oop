@@ -1,30 +1,41 @@
-namespace CoffeeShop
-{
+using Coffee_types;  
+
+
     public class Barista
     {
-        public Coffee MakeCoffee(Intensity intensity)
+        public Americano MakeAmericano(Intensity intensity, int mlOfWater)
         {
-            return new Coffee(intensity);
+            Americano americano = new Americano(intensity, mlOfWater);
+            PrepareCoffee(americano);
+            return americano;
         }
 
         public Cappuccino MakeCappuccino(Intensity intensity, int mlOfMilk)
         {
-            return new Cappuccino(intensity, mlOfMilk);
-        }
-
-        public Americano MakeAmericano(Intensity intensity, int mlOfWater)
-        {
-            return new Americano(intensity, mlOfWater);
+            Cappuccino cappuccino = new Cappuccino(intensity, mlOfMilk);
+            PrepareCoffee(cappuccino);
+            return cappuccino;
         }
 
         public PumpkinSpiceLatte MakePumpkinSpiceLatte(Intensity intensity, int mlOfMilk, int mgOfPumpkinSpice)
         {
-            return new PumpkinSpiceLatte(intensity, mlOfMilk, mgOfPumpkinSpice);
+            PumpkinSpiceLatte latte = new PumpkinSpiceLatte(intensity, mlOfMilk, mgOfPumpkinSpice);
+            PrepareCoffee(latte);
+            return latte;
         }
 
         public SyrupCappuccino MakeSyrupCappuccino(Intensity intensity, int mlOfMilk, SyrupType syrup)
         {
-            return new SyrupCappuccino(intensity, mlOfMilk, syrup);
+            SyrupCappuccino syrupCappuccino = new SyrupCappuccino(intensity, mlOfMilk, syrup);
+            PrepareCoffee(syrupCappuccino);
+            return syrupCappuccino;
+        }
+
+        private void PrepareCoffee(Coffee coffee)
+        {
+            Console.WriteLine($"Preparing {coffee.GetType().Name}...");
+            coffee.PrintCoffeeDetails();
+            Console.WriteLine("Coffee is ready!\n");
         }
     }
-}
+

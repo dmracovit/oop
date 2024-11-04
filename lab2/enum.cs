@@ -1,4 +1,4 @@
-namespace CoffeeShop
+namespace Coffee_types
 {
     public enum Intensity
     {
