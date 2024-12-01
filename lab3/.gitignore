@@ -1,0 +1,30 @@
+# Ignore build output
+bin/
+obj/
+
+# User-specific files
+.vscode/
+.idea/
+
+# Windows Installer files
+*.cab
+*.msi
+*.msm
+*.msp
+
+# ASP.NET files
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# JetBrains Rider
+.idea/
+
+# Visual Studio for Mac
+.vscode/
+
+# Exclude config files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
