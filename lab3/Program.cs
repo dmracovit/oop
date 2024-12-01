@@ -1,39 +1,38 @@
 ﻿using Newtonsoft.Json;
+using System;
+using System.IO;
+
 class Program
 {
     static void Main(string[] args)
     {
-        // Указываем путь к папке, где находятся файлы с данными машин
-        string folderPath = @"queue"; // Измените на нужный путь
-
-        // Создаем очередь с размером 10 (или можно сделать без ограничения)
+        string folderPath = @"queue";
         var carQueue = new ArrayQueue<Car>(10);
 
-        // Читаем все файлы в папке
-        foreach (var filePath in Directory.GetFiles(folderPath, "*.json"))
-        {
-            // Читаем содержимое каждого файла
-            var fileContent = File.ReadAllText(filePath);
-
-            // Парсим JSON в объект Car
-            var car = JsonConvert.DeserializeObject<Car>(fileContent);  // Используем JsonConvert
-
-            // Добавляем объект Car в очередь
-            carQueue.Enqueue(car);
-        }
-
-        // Создаем экземпляры сервисов для заправки и ужина
         var electricStation = new ElectricStation();
         var gasStation = new GasStation();
         var peopleDinner = new PeopleDinner();
         var robotDinner = new RobotDinner();
 
-        // Создаем экземпляр CarServiceStation и передаем очередь и сервисы для машин типа "ELECTRIC"
-        var electricCarServiceStation = new CarServiceStation(carQueue, electricStation, peopleDinner);
-        electricCarServiceStation.ProcessCars();
+        var carStation = new CarStation(carQueue, electricStation, peopleDinner);
 
-        // Создаем экземпляр CarServiceStation и передаем очередь и сервисы для машин типа "GAS"
-        var gasCarServiceStation = new CarServiceStation(carQueue, gasStation, robotDinner);
-        gasCarServiceStation.ProcessCars();
+        foreach (var filePath in Directory.GetFiles(folderPath, "*.json"))
+        {
+            var fileContent = File.ReadAllText(filePath);
+            var car = JsonConvert.DeserializeObject<Car>(fileContent);
+            carStation.AddCar(car);
+        }
+
+        carStation.ServeCars();
+
+        var newCar = new Car(4, "ELECTRIC", "ROBOTS", true, 123);
+        carStation.AddCar(newCar);
+
+        Console.WriteLine("Processing new car...");
+        carStation.ServeCars();
+
+        var gasCarStation = new CarStation(carQueue, gasStation, robotDinner);
+        Console.WriteLine("Processing gas cars...");
+        gasCarStation.ServeCars();
     }
 }

@@ -44,13 +44,11 @@
 //             queue.Enqueue(car1);
 //             queue.Enqueue(car2);
 
-//             // Assert size after enqueuing
 //             Assert.Equal(2, queue.Size());
 
 //             // Dequeue one car
 //             queue.Dequeue();
 
-//             // Assert size after dequeuing one car
 //             Assert.Equal(1, queue.Size());
 //         }
 
@@ -63,7 +61,6 @@
 //             // Assert that the queue is empty initially
 //             Assert.True(queue.IsEmpty(), "Queue should be empty initially.");
 
-//             // Act - Try to dequeue from an empty queue and expect an exception
 //             var exception = Assert.Throws<InvalidOperationException>(() => queue.Dequeue());
 //             Assert.Equal("Queue is empty", exception.Message);
 //         }
@@ -81,7 +78,6 @@
 //             stringQueue.Enqueue("Hello");
 //             stringQueue.Enqueue("World");
 
-//             // Assert for int queue
 //             Assert.Equal(2, intQueue.Size());
 //             Assert.Equal(1, intQueue.Dequeue());
 //             Assert.Equal(1, intQueue.Size());

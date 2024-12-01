@@ -5,7 +5,6 @@ public class ArrayQueue<T> : IQueue<T>
     private int rear;
     private int capacity;
 
-    // Начальный размер очереди
     public ArrayQueue(int initialCapacity = 10)
     {
         this.capacity = initialCapacity;
@@ -16,10 +15,8 @@ public class ArrayQueue<T> : IQueue<T>
 
     public void Enqueue(T item)
     {
-        // Проверка на переполнение очереди
         if ((rear + 1) % capacity == front)
         {
-            // Если очередь полна, увеличиваем ее размер
             Resize(capacity * 2);
         }
 
@@ -47,13 +44,11 @@ public class ArrayQueue<T> : IQueue<T>
         return front == rear;
     }
 
-    // Метод для увеличения размера очереди
     private void Resize(int newCapacity)
     {
         T[] newItems = new T[newCapacity];
         int size = Size();
 
-        // Копируем элементы из старой очереди в новую
         for (int i = 0; i < size; i++)
         {
             newItems[i] = items[(front + i) % capacity];

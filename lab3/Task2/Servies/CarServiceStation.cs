@@ -15,32 +15,28 @@ public class CarServiceStation
     {
         while (!_carQueue.IsEmpty())
         {
-            var car = _carQueue.Dequeue(); // Берем автомобиль из очереди
+            var car = _carQueue.Dequeue(); 
 
-            // Выбираем сервис в зависимости от типа машины
             if (car.Type == "ELECTRIC")
             {
-                // Электрические машины заправляются на электрической станции
                 _refuelService = new ElectricStation();
-                _refuelService.Refuel(car.Id);  // Обслуживаем заправку с использованием ID
+                _refuelService.Refuel(car.Id);  
             }
             else if (car.Type == "GAS")
             {
-                // Бензиновые машины заправляются на газовой станции
                 _refuelService = new GasStation();
-                _refuelService.Refuel(car.Id);  // Обслуживаем заправку с использованием ID
+                _refuelService.Refuel(car.Id);  
             }
 
-            // Обрабатываем ужин, если требуется
             if (car.IsDining)
             {
                 if (car.Passengers == "PEOPLE")
                 {
-                    _dineService.ServeDinner(car.Id);  // Сервируем ужин людям
+                    _dineService.ServeDinner(car.Id);  
                 }
                 else if (car.Passengers == "ROBOTS")
                 {
-                    _dineService.ServeDinner(car.Id);  // Сервируем ужин роботам
+                    _dineService.ServeDinner(car.Id); 
                 }
             }
             else
