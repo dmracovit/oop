@@ -1,3 +1,5 @@
+using System;
+
 public class ArrayQueue<T> : IQueue<T>
 {
     private T[] items;
@@ -35,5 +37,10 @@ public class ArrayQueue<T> : IQueue<T>
     public int Size()
     {
         return (rear - front + capacity) % capacity;
+    }
+
+    public bool IsEmpty()
+    {
+        return front == rear;
     }
 }

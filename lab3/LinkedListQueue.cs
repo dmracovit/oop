@@ -1,3 +1,7 @@
+
+using System;
+using System.Collections.Generic;
+
 public class LinkedListQueue<T> : IQueue<T>
 {
     private LinkedList<T> items;
@@ -25,5 +29,10 @@ public class LinkedListQueue<T> : IQueue<T>
     public int Size()
     {
         return items.Count;
+    }
+
+    public bool IsEmpty()
+    {
+        return items.Count == 0;
     }
 }
