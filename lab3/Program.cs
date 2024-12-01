@@ -1,52 +1,39 @@
-﻿using System;
-using System.IO;
-using Newtonsoft.Json;
-
-
-
+﻿using Newtonsoft.Json;
 class Program
 {
     static void Main(string[] args)
     {
-        string folderPath = "queue"; // Set folder path here
-        IQueue<Car> carQueue = new LinkedListQueue<Car>(); // Or use ArrayQueue<Car>();
+        // Указываем путь к папке, где находятся файлы с данными машин
+        string folderPath = @"queue"; // Измените на нужный путь
 
-        // Read all JSON files from the folder and add to the queue
-        LoadCarsFromFolder(folderPath, carQueue);
+        // Создаем очередь с размером 10 (или можно сделать без ограничения)
+        var carQueue = new ArrayQueue<Car>(10);
 
-        // Print the size of the queue
-        Console.WriteLine($"Cars in the queue: {carQueue.Size()}");
-
-        // Dequeue and print some cars
-        if (!carQueue.IsEmpty())
+        // Читаем все файлы в папке
+        foreach (var filePath in Directory.GetFiles(folderPath, "*.json"))
         {
-            var car = carQueue.Dequeue();
-            Console.WriteLine($"Dequeued car: {car.Id} - {car.Type}");
-        }
-    }
+            // Читаем содержимое каждого файла
+            var fileContent = File.ReadAllText(filePath);
 
-    static void LoadCarsFromFolder(string folderPath, IQueue<Car> queue)
-    {
-        if (Directory.Exists(folderPath))
-        {
-            string[] files = Directory.GetFiles(folderPath, "*.json");
-            foreach (var file in files)
-            {
-                try
-                {
-                    string jsonContent = File.ReadAllText(file);
-                    var car = Car.FromJson(jsonContent);
-                    queue.Enqueue(car);
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Error reading {file}: {ex.Message}");
-                }
-            }
+            // Парсим JSON в объект Car
+            var car = JsonConvert.DeserializeObject<Car>(fileContent);  // Используем JsonConvert
+
+            // Добавляем объект Car в очередь
+            carQueue.Enqueue(car);
         }
-        else
-        {
-            Console.WriteLine("Folder does not exist.");
-        }
+
+        // Создаем экземпляры сервисов для заправки и ужина
+        var electricStation = new ElectricStation();
+        var gasStation = new GasStation();
+        var peopleDinner = new PeopleDinner();
+        var robotDinner = new RobotDinner();
+
+        // Создаем экземпляр CarServiceStation и передаем очередь и сервисы для машин типа "ELECTRIC"
+        var electricCarServiceStation = new CarServiceStation(carQueue, electricStation, peopleDinner);
+        electricCarServiceStation.ProcessCars();
+
+        // Создаем экземпляр CarServiceStation и передаем очередь и сервисы для машин типа "GAS"
+        var gasCarServiceStation = new CarServiceStation(carQueue, gasStation, robotDinner);
+        gasCarServiceStation.ProcessCars();
     }
 }
