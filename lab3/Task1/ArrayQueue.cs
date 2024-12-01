@@ -5,7 +5,7 @@ public class ArrayQueue<T> : IQueue<T>
     private int rear;
     private int capacity;
 
-    public ArrayQueue(int initialCapacity = 10)
+    public ArrayQueue(int initialCapacity = 100)
     {
         this.capacity = initialCapacity;
         items = new T[capacity];
