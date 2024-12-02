@@ -7,78 +7,72 @@ class Program
     static void Main(string[] args)
     {
         string folderPath = @"queue"; 
-        var carQueue = new ArrayQueue<Car>(100); 
+        var carQueue = new ArrayQueue<Car>(100);
 
-        var electricStation = new ElectricStation(); 
-        var gasStation = new GasStation(); 
-        var peopleDinner = new PeopleDinner(); 
-        var robotDinner = new RobotDinner(); 
+        var electricStation = new ElectricStation();
+        var gasStation = new GasStation();
+        var peopleDinner = new PeopleDinner();
+        var robotDinner = new RobotDinner();
 
-        var carStation = new CarStation(carQueue, electricStation, peopleDinner); 
 
-        // Обрабатываем уже существующие машины в папке
-        ProcessExistingCars(folderPath, carStation);
+        int maxConcurrentCars = 2;
+        var semaphore = new Semaphore(2); 
+        var carStation = new CarStation(carQueue, electricStation, peopleDinner, semaphore, maxConcurrentCars);
 
-        // Настроим FileSystemWatcher для отслеживания появления новых машин в папке
-        FileSystemWatcher watcher = new FileSystemWatcher
-        {
-            Path = folderPath,
-            Filter = "*.json", // Фильтруем только JSON файлы
-            NotifyFilter = NotifyFilters.FileName | NotifyFilters.LastWrite
-        };
+        FileSystemWatcher watcher = new FileSystemWatcher();
+        watcher.Path = folderPath;
+        watcher.Filter = "*.json"; 
+        watcher.NotifyFilter = NotifyFilters.FileName | NotifyFilters.LastWrite;
 
-        // Обработчик события при создании нового файла
-        watcher.Created += (sender, e) => OnChanged(sender, e, carStation);
+        watcher.Created += (sender, e) => OnNewFileAdded(e, carStation);
+        watcher.Changed += (sender, e) => OnNewFileAdded(e, carStation);
 
-        // Начинаем отслеживать папку
         watcher.EnableRaisingEvents = true;
 
-        // Ожидаем, чтобы программа продолжала работать
-        Console.WriteLine("Monitoring folder for new files. Press [Enter] to exit...");
-        Console.ReadLine();
-    }
+        ProcessExistingFiles(folderPath, carStation);
 
-    private static void OnChanged(object sender, FileSystemEventArgs e, CarStation carStation)
-    {
-        // Обрабатываем только созданные или измененные файлы
-        if (e.ChangeType == WatcherChangeTypes.Created || e.ChangeType == WatcherChangeTypes.Changed)
+        Console.WriteLine("Started monitoring the folder for new cars...");
+        Console.WriteLine("Press [Enter] to stop...");
+
+        while (true)
         {
-            Console.WriteLine($"New file detected: {e.Name} ({e.ChangeType})");
-
-            try
-            {
-                // Чтение содержимого файла и десериализация в объект Car
-                string content = File.ReadAllText(e.FullPath);
-                var car = JsonConvert.DeserializeObject<Car>(content);
-                carStation.AddCar(car); // Добавляем машину в очередь
-
-                // Обслуживаем машину
-                carStation.ServeCars();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error processing file {e.Name}: {ex.Message}");
-            }
+            carStation.ServeCars();
+            System.Threading.Thread.Sleep(1000);
         }
     }
 
-    private static void ProcessExistingCars(string folderPath, CarStation carStation)
+    private static void OnNewFileAdded(FileSystemEventArgs e, CarStation carStation)
     {
-        // Обрабатываем все машины, которые уже есть в папке при запуске программы
+        try
+        {
+            Console.WriteLine($"New file detected: {e.Name}");
+            string fileContent = File.ReadAllText(e.FullPath);
+            var car = JsonConvert.DeserializeObject<Car>(fileContent);
+
+            carStation.AddCar(car);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error processing file {e.Name}: {ex.Message}");
+        }
+    }
+
+    private static void ProcessExistingFiles(string folderPath, CarStation carStation)
+    {
         foreach (var filePath in Directory.GetFiles(folderPath, "*.json"))
         {
             try
             {
+                Console.WriteLine($"Processing existing file: {filePath}");
                 string fileContent = File.ReadAllText(filePath);
                 var car = JsonConvert.DeserializeObject<Car>(fileContent);
-                carStation.AddCar(car); // Добавляем машину в очередь
+
+                carStation.AddCar(car);
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error reading file {filePath}: {ex.Message}");
+                Console.WriteLine($"Error processing existing file {filePath}: {ex.Message}");
             }
         }
-
-        carStation.ServeCars();
     }
 }
