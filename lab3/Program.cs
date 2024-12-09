@@ -6,7 +6,7 @@ class Program
 {
     static void Main(string[] args)
     {
-        string folderPath = @"queue"; 
+        string folderPath = @"/home/dima/Documents/oop/main/queue"; 
         var carQueue = new ArrayQueue<Car>(100);
 
         var electricStation = new ElectricStation();
@@ -17,26 +17,27 @@ class Program
 
         int maxConcurrentCars = 2;
         var semaphore = new Semaphore(2); 
-        var carStation = new CarStation(carQueue, electricStation, peopleDinner, semaphore, maxConcurrentCars);
+        var electricPeopleCarStation = new CarStation(carQueue, electricStation, peopleDinner, semaphore, maxConcurrentCars);
+        var gasRobotStation = new CarStation(carQueue, gasStation, robotDinner, semaphore, maxConcurrentCars);
 
         FileSystemWatcher watcher = new FileSystemWatcher();
         watcher.Path = folderPath;
         watcher.Filter = "*.json"; 
         watcher.NotifyFilter = NotifyFilters.FileName | NotifyFilters.LastWrite;
 
-        watcher.Created += (sender, e) => OnNewFileAdded(e, carStation);
-        watcher.Changed += (sender, e) => OnNewFileAdded(e, carStation);
+        watcher.Created += (sender, e) => OnNewFileAdded(e, electricPeopleCarStation);
+        watcher.Changed += (sender, e) => OnNewFileAdded(e, electricPeopleCarStation);
 
         watcher.EnableRaisingEvents = true;
 
-        ProcessExistingFiles(folderPath, carStation);
+        ProcessExistingFiles(folderPath, electricPeopleCarStation);
 
         Console.WriteLine("Started monitoring the folder for new cars...");
         Console.WriteLine("Press [Enter] to stop...");
 
         while (true)
         {
-            carStation.ServeCars();
+            electricPeopleCarStation.ServeCars();
             System.Threading.Thread.Sleep(1000);
         }
     }

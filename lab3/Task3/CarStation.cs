@@ -3,8 +3,8 @@ public class CarStation
     private ArrayQueue<Car> _carQueue;
     private IRefuelable _refuelService;
     private IDineable _dineService;
-    private Semaphore _semaphore; // Semaphore to control access
-    private int _maxConcurrentCars; // Maximum number of cars processed concurrently
+    private Semaphore _semaphore; 
+    private int _maxConcurrentCars; 
 
     public CarStation(ArrayQueue<Car> carQueue, IRefuelable refuelService, IDineable dineService, Semaphore semaphore, int maxConcurrentCars)
     {
